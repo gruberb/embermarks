@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Embermarks</title>
+        <link rel="stylesheet" href="../shared/styles.css" />
+        <style>
+            body {
+                width: 400px;
+                min-height: 320px;
+                max-height: 540px;
+                overflow-y: auto;
+            }
+
+            .header-icon {
+                width: 16px;
+                height: 16px;
+                vertical-align: middle;
+                margin-right: 5px;
+                opacity: 0.6;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>
+                <img src="../icons/ember-48.svg" alt="" class="header-icon" />
+                Embermarks
+            </h1>
+        </div>
+
+        <div class="bookmarks-container" id="bookmarks">
+            <div class="loading"></div>
+        </div>
+
+        <div class="footer-actions">
+            <button class="footer-btn" id="refresh">Refresh</button>
+            <a href="../options/options.html" class="footer-btn" target="_blank"
+                >Settings</a
+            >
+        </div>
+
+        <script src="../shared/ui.js"></script>
+        <script src="popup.js"></script>
+    </body>
+</html>

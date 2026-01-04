@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Outer glow/ember effect -->
+  <ellipse cx="24" cy="38" rx="8" ry="3" fill="#ff6b35" opacity="0.3"/>
+
+  <!-- Main bookmark body with gradient -->
+  <defs>
+    <linearGradient id="emberGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ff6b35"/>
+      <stop offset="50%" stop-color="#ff8c42"/>
+      <stop offset="100%" stop-color="#ffd700"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Bookmark shape -->
+  <path d="M14 8 L14 40 L24 32 L34 40 L34 8 C34 6, 32 4, 30 4 L18 4 C16 4, 14 6, 14 8 Z"
+        fill="url(#emberGrad)"/>
+
+  <!-- Flame wisps rising from top -->
+  <path d="M20 6 Q18 2, 20 0 Q22 3, 21 6" fill="#ffd700" opacity="0.9"/>
+  <path d="M24 5 Q23 0, 25 -2 Q27 1, 25 5" fill="#ffaa00" opacity="0.8"/>
+  <path d="M28 6 Q30 2, 28 0 Q26 3, 27 6" fill="#ffd700" opacity="0.9"/>
+
+  <!-- Inner ember glow -->
+  <path d="M18 12 L18 34 L24 28 L30 34 L30 12 Z"
+        fill="#1a1a1a" opacity="0.2"/>
+
+  <!-- Small ember particles -->
+  <circle cx="12" cy="10" r="1.5" fill="#ffd700" opacity="0.7"/>
+  <circle cx="36" cy="8" r="1" fill="#ff8c42" opacity="0.6"/>
+  <circle cx="10" cy="18" r="1" fill="#ff6b35" opacity="0.5"/>
+</svg>
