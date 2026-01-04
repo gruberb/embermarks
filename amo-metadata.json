@@ -1,0 +1,8 @@
+{
+  "version": {
+    "license": "MPL-2.0"
+  },
+  "categories": {
+    "firefox": ["bookmarks"]
+  }
+}
