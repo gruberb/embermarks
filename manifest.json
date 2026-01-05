@@ -1,14 +1,18 @@
 {
   "manifest_version": 2,
   "name": "Embermarks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Rediscover your forgotten bookmarks. Surface the ones you never visit.",
   "author": "Bastian Gruber",
   "homepage_url": "https://github.com/gruberb/embermarks",
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "embermarks@gruberb.dev"
+      "id": "embermarks@gruberb.dev",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
 
