@@ -16,6 +16,19 @@ A Firefox extension that surfaces your forgotten bookmarks — the ones you save
 - **Configurable criteria** — Set maximum visit count and minimum age for "forgotten" status
 - **Exclude folders** — Keep certain bookmark folders out of suggestions
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="screenshots/embermarks_popup.png" width="300" alt="Popup"></td>
+    <td><img src="screenshots/embermarks_menu.png" width="300" alt="Settings Menu"></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Popup</em></td>
+    <td align="center"><em>Settings Menu</em></td>
+  </tr>
+</table>
+
 ## Building from Source
 
 ```sh
