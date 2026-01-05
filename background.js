@@ -4,12 +4,20 @@
 // Minimum valid timestamp (Jan 1, 2010) - older dates are likely corrupted imports
 const MIN_VALID_TIMESTAMP = 1262304000000;
 
+// Cache duration for "daily" refresh mode (24 hours in ms)
+const DAILY_CACHE_DURATION = 24 * 60 * 60 * 1000;
+
 const DEFAULT_SETTINGS = {
   excludedFolders: [],
   numBookmarks: 5,
   maxVisitCount: 2, // Consider "forgotten" if visited 2 or fewer times
   minAgeDays: 7, // Only show bookmarks older than 7 days
+  refreshBehavior: "always", // "always", "daily", or "manual"
 };
+
+// In-memory cache for bookmarks
+let cachedBookmarks = null;
+let cacheTimestamp = null;
 
 // Get user settings
 async function getSettings() {
@@ -22,6 +30,33 @@ async function saveSettings(settings) {
   await browser.storage.local.set({
     settings: { ...DEFAULT_SETTINGS, ...settings },
   });
+}
+
+// Get cached bookmarks if valid
+async function getCachedBookmarks() {
+  const result = await browser.storage.local.get([
+    "cachedBookmarks",
+    "cacheTimestamp",
+  ]);
+  return {
+    bookmarks: result.cachedBookmarks || null,
+    timestamp: result.cacheTimestamp || null,
+  };
+}
+
+// Save bookmarks to cache
+async function setCachedBookmarks(bookmarks) {
+  await browser.storage.local.set({
+    cachedBookmarks: bookmarks,
+    cacheTimestamp: Date.now(),
+  });
+}
+
+// Clear the cache
+async function clearCache() {
+  await browser.storage.local.remove(["cachedBookmarks", "cacheTimestamp"]);
+  cachedBookmarks = null;
+  cacheTimestamp = null;
 }
 
 // Get all bookmarks recursively, respecting excluded folders
@@ -71,8 +106,8 @@ async function getVisitCount(url) {
   }
 }
 
-// Get forgotten bookmarks (low visit count, old enough)
-async function getForgottenBookmarks() {
+// Fetch fresh forgotten bookmarks
+async function fetchFreshBookmarks() {
   const settings = await getSettings();
   const bookmarks = await getAllBookmarks(settings.excludedFolders);
 
@@ -118,6 +153,41 @@ async function getForgottenBookmarks() {
   return shuffled.slice(0, settings.numBookmarks);
 }
 
+// Get forgotten bookmarks (with caching logic)
+async function getForgottenBookmarks(forceRefresh = false) {
+  const settings = await getSettings();
+  const { bookmarks: cached, timestamp } = await getCachedBookmarks();
+
+  // Determine if we should use cache
+  if (!forceRefresh && cached && timestamp) {
+    const now = Date.now();
+    const cacheAge = now - timestamp;
+
+    if (settings.refreshBehavior === "manual") {
+      // Always use cache in manual mode (until explicit refresh)
+      return cached;
+    }
+
+    if (
+      settings.refreshBehavior === "daily" &&
+      cacheAge < DAILY_CACHE_DURATION
+    ) {
+      // Use cache if less than 24 hours old
+      return cached;
+    }
+  }
+
+  // Fetch fresh bookmarks
+  const freshBookmarks = await fetchFreshBookmarks();
+
+  // Cache the results (for daily and manual modes)
+  if (settings.refreshBehavior !== "always") {
+    await setCachedBookmarks(freshBookmarks);
+  }
+
+  return freshBookmarks;
+}
+
 // Get all bookmark folders for settings UI
 async function getBookmarkFolders() {
   const tree = await browser.bookmarks.getTree();
@@ -140,11 +210,14 @@ async function getBookmarkFolders() {
   return folders;
 }
 
-// Handle messages from popup/newtab/options
+// Handle messages from popup/options
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.action) {
     case "getForgottenBookmarks":
-      return getForgottenBookmarks();
+      return getForgottenBookmarks(message.forceRefresh || false);
+
+    case "clearCache":
+      return clearCache();
 
     case "getBookmarkFolders":
       return getBookmarkFolders();

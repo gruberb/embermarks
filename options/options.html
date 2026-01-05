@@ -108,6 +108,15 @@
                 text-align: center;
             }
 
+            select {
+                padding: 0.5rem;
+                border: 1px solid #444;
+                border-radius: 6px;
+                background: #1a1a1a;
+                color: #fff;
+                font-size: 1rem;
+            }
+
             input[type="checkbox"] {
                 width: 20px;
                 height: 20px;
@@ -218,6 +227,18 @@
                         max="20"
                         value="5"
                     />
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        Refresh behavior
+                        <span>When to show new bookmarks</span>
+                    </div>
+                    <select id="refreshBehavior">
+                        <option value="always">Every time</option>
+                        <option value="daily">Once a day</option>
+                        <option value="manual">Manual only</option>
+                    </select>
                 </div>
             </div>
 

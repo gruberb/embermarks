@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
   const numBookmarksInput = document.getElementById("numBookmarks");
+  const refreshBehaviorSelect = document.getElementById("refreshBehavior");
   const maxVisitCountInput = document.getElementById("maxVisitCount");
   const minAgeDaysInput = document.getElementById("minAgeDays");
   const folderList = document.getElementById("folderList");
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const settings = await browser.runtime.sendMessage({ action: "getSettings" });
 
   numBookmarksInput.value = settings.numBookmarks;
+  refreshBehaviorSelect.value = settings.refreshBehavior || "always";
   maxVisitCountInput.value = settings.maxVisitCount;
   minAgeDaysInput.value = settings.minAgeDays;
 
@@ -55,6 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const newSettings = {
       numBookmarks: parseInt(numBookmarksInput.value, 10),
+      refreshBehavior: refreshBehaviorSelect.value,
       maxVisitCount: parseInt(maxVisitCountInput.value, 10),
       minAgeDays: parseInt(minAgeDaysInput.value, 10),
       excludedFolders,
@@ -64,6 +67,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       action: "saveSettings",
       settings: newSettings,
     });
+
+    // Clear cache when settings change
+    await browser.runtime.sendMessage({ action: "clearCache" });
 
     // Show save confirmation
     saveStatus.classList.add("visible");

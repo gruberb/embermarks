@@ -4,20 +4,17 @@ A Firefox extension that surfaces your forgotten bookmarks — the ones you save
 
 ## Installation
 
-### From Firefox Add-ons (recommended)
+### From Firefox Add-ons
 
-[Install from AMO](https://addons.mozilla.org/firefox/addon/embermarks/)
-
-### Manual Install
-
-Download the latest `.xpi` from [Releases](https://github.com/gruberb/embermarks/releases) and drag it into Firefox.
+[Install from AMO](https://addons.mozilla.org/en-US/firefox/addon/embermarks1/)
 
 ## Features
 
 - **Discover forgotten bookmarks** — Shows bookmarks you've rarely or never visited
+- **Click to open** — Just click any bookmark to visit it
+- **Refresh behavior** — Choose to see new bookmarks every time, once a day, or only when you manually refresh
 - **Configurable criteria** — Set maximum visit count and minimum age for "forgotten" status
 - **Exclude folders** — Keep certain bookmark folders out of suggestions
-- **Quick actions** — Visit, skip, or delete bookmarks directly from the popup
 
 ## Building from Source
 

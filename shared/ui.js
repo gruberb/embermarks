@@ -151,30 +151,3 @@ function showError(container) {
 
   container.appendChild(emptyState);
 }
-
-// Load and display bookmarks
-async function loadBookmarks(container) {
-  showLoading(container);
-
-  try {
-    const bookmarks = await browser.runtime.sendMessage({
-      action: "getForgottenBookmarks",
-    });
-
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
-
-    if (!bookmarks || bookmarks.length === 0) {
-      showEmptyState(container, "none");
-      return;
-    }
-
-    for (const bookmark of bookmarks) {
-      container.appendChild(createBookmarkCard(bookmark));
-    }
-  } catch (error) {
-    console.error("Failed to load bookmarks:", error);
-    showError(container);
-  }
-}
