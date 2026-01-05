@@ -20,7 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     action: "getBookmarkFolders",
   });
 
-  folderList.innerHTML = "";
+  // Clear loading text
+  while (folderList.firstChild) {
+    folderList.removeChild(folderList.firstChild);
+  }
 
   for (const folder of folders) {
     const item = document.createElement("div");
@@ -28,11 +31,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const isExcluded = settings.excludedFolders.includes(folder.id);
 
-    item.innerHTML = `
-      <input type="checkbox" id="folder-${folder.id}" value="${folder.id}" ${isExcluded ? "checked" : ""}>
-      <label for="folder-${folder.id}">📁 ${folder.title || "(unnamed)"}</label>
-    `;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = `folder-${folder.id}`;
+    checkbox.value = folder.id;
+    checkbox.checked = isExcluded;
 
+    const label = document.createElement("label");
+    label.htmlFor = `folder-${folder.id}`;
+    label.textContent = `📁 ${folder.title || "(unnamed)"}`;
+
+    item.appendChild(checkbox);
+    item.appendChild(label);
     folderList.appendChild(item);
   }
 

@@ -20,13 +20,6 @@ function formatDaysAgo(days) {
   return `${Math.floor(days / 365)}y ago`;
 }
 
-// Escape HTML
-function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
-}
-
 // Create a bookmark card element
 function createBookmarkCard(bookmark) {
   const card = document.createElement("a");
@@ -35,20 +28,47 @@ function createBookmarkCard(bookmark) {
   card.target = "_blank";
   card.rel = "noopener";
 
-  const faviconUrl = getFaviconUrl(bookmark.url);
+  // Favicon container
+  const favicon = document.createElement("div");
+  favicon.className = "bookmark-favicon";
 
-  card.innerHTML = `
-    <div class="bookmark-favicon">
-      ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : "🔖"}
-    </div>
-    <div class="bookmark-info">
-      <div class="bookmark-title" title="${escapeHtml(bookmark.title)}">${escapeHtml(bookmark.title)}</div>
-      <div class="bookmark-meta">
-        ${bookmark.visitCount} visit${bookmark.visitCount !== 1 ? "s" : ""} · Added ${formatDaysAgo(bookmark.daysSinceAdded)}
-      </div>
-      ${bookmark.path ? `<div class="bookmark-folder">${escapeHtml(bookmark.path)}</div>` : ""}
-    </div>
-  `;
+  const faviconUrl = getFaviconUrl(bookmark.url);
+  if (faviconUrl) {
+    const img = document.createElement("img");
+    img.src = faviconUrl;
+    img.alt = "";
+    favicon.appendChild(img);
+  } else {
+    favicon.textContent = "🔖";
+  }
+
+  // Info container
+  const info = document.createElement("div");
+  info.className = "bookmark-info";
+
+  const title = document.createElement("div");
+  title.className = "bookmark-title";
+  title.title = bookmark.title;
+  title.textContent = bookmark.title;
+
+  const meta = document.createElement("div");
+  meta.className = "bookmark-meta";
+  const visitText =
+    bookmark.visitCount === 1 ? "1 visit" : `${bookmark.visitCount} visits`;
+  meta.textContent = `${visitText} · Added ${formatDaysAgo(bookmark.daysSinceAdded)}`;
+
+  info.appendChild(title);
+  info.appendChild(meta);
+
+  if (bookmark.path) {
+    const folder = document.createElement("div");
+    folder.className = "bookmark-folder";
+    folder.textContent = bookmark.path;
+    info.appendChild(folder);
+  }
+
+  card.appendChild(favicon);
+  card.appendChild(info);
 
   return card;
 }
@@ -70,18 +90,66 @@ function showEmptyState(container, reason = "none") {
 
   const msg = messages[reason] || messages.none;
 
-  container.innerHTML = `
-    <div class="empty-state">
-      <div class="icon">${msg.icon}</div>
-      <h2>${msg.title}</h2>
-      <p>${msg.text}</p>
-    </div>
-  `;
+  // Clear container
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+
+  const emptyState = document.createElement("div");
+  emptyState.className = "empty-state";
+
+  const icon = document.createElement("div");
+  icon.className = "icon";
+  icon.textContent = msg.icon;
+
+  const heading = document.createElement("h2");
+  heading.textContent = msg.title;
+
+  const paragraph = document.createElement("p");
+  paragraph.textContent = msg.text;
+
+  emptyState.appendChild(icon);
+  emptyState.appendChild(heading);
+  emptyState.appendChild(paragraph);
+
+  container.appendChild(emptyState);
 }
 
 // Show loading state
 function showLoading(container) {
-  container.innerHTML = '<div class="loading"></div>';
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+
+  const loading = document.createElement("div");
+  loading.className = "loading";
+  container.appendChild(loading);
+}
+
+// Show error state
+function showError(container) {
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+
+  const emptyState = document.createElement("div");
+  emptyState.className = "empty-state";
+
+  const icon = document.createElement("div");
+  icon.className = "icon";
+  icon.textContent = "!";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "Oops";
+
+  const paragraph = document.createElement("p");
+  paragraph.textContent = "Failed to load bookmarks";
+
+  emptyState.appendChild(icon);
+  emptyState.appendChild(heading);
+  emptyState.appendChild(paragraph);
+
+  container.appendChild(emptyState);
 }
 
 // Load and display bookmarks
@@ -93,7 +161,9 @@ async function loadBookmarks(container) {
       action: "getForgottenBookmarks",
     });
 
-    container.innerHTML = "";
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
 
     if (!bookmarks || bookmarks.length === 0) {
       showEmptyState(container, "none");
@@ -105,12 +175,6 @@ async function loadBookmarks(container) {
     }
   } catch (error) {
     console.error("Failed to load bookmarks:", error);
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="icon">!</div>
-        <h2>Oops</h2>
-        <p>Failed to load bookmarks</p>
-      </div>
-    `;
+    showError(container);
   }
 }
