@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Embermarks",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Rediscover your forgotten bookmarks. Surface the ones you never visit.",
   "author": "Bastian Gruber",
   "homepage_url": "https://github.com/gruberb/embermarks",

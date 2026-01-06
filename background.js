@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
   numBookmarks: 5,
   maxVisitCount: 2, // Consider "forgotten" if visited 2 or fewer times
   minAgeDays: 7, // Only show bookmarks older than 7 days
+  notVisitedInDays: 0, // Consider "forgotten" if not visited in X days (0 = disabled)
   refreshBehavior: "always", // "always", "daily", or "manual"
 };
 
@@ -96,13 +97,18 @@ async function getAllBookmarks(excludedFolderIds = []) {
   return bookmarks;
 }
 
-// Get visit count for a URL
-async function getVisitCount(url) {
+// Get visit count and last visit time for a URL
+async function getVisitInfo(url) {
   try {
     const visits = await browser.history.getVisits({ url });
-    return visits.length;
+    const lastVisitTime =
+      visits.length > 0 ? Math.max(...visits.map((v) => v.visitTime)) : null;
+    return {
+      visitCount: visits.length,
+      lastVisitTime: lastVisitTime,
+    };
   } catch (e) {
-    return 0;
+    return { visitCount: 0, lastVisitTime: null };
   }
 }
 
@@ -116,6 +122,7 @@ async function fetchFreshBookmarks() {
 
   // Filter by age and get visit counts
   const candidates = [];
+  const notVisitedInMs = settings.notVisitedInDays * 24 * 60 * 60 * 1000;
 
   for (const bookmark of bookmarks) {
     // Skip if too new
@@ -131,16 +138,29 @@ async function fetchFreshBookmarks() {
       continue;
     }
 
-    const visitCount = await getVisitCount(bookmark.url);
+    const { visitCount, lastVisitTime } = await getVisitInfo(bookmark.url);
 
-    if (visitCount <= settings.maxVisitCount) {
+    // Check if bookmark qualifies as "forgotten"
+    // Either: low visit count OR hasn't been visited in X days (if enabled)
+    const isLowVisitCount = visitCount <= settings.maxVisitCount;
+    const isStale =
+      settings.notVisitedInDays > 0 &&
+      (lastVisitTime === null || now - lastVisitTime > notVisitedInMs);
+
+    if (isLowVisitCount || isStale) {
       // Check if dateAdded is valid (not corrupted/too old)
       const hasValidDate =
         bookmark.dateAdded && bookmark.dateAdded >= MIN_VALID_TIMESTAMP;
 
+      const daysSinceLastVisit = lastVisitTime
+        ? Math.floor((now - lastVisitTime) / (24 * 60 * 60 * 1000))
+        : null;
+
       candidates.push({
         ...bookmark,
         visitCount,
+        lastVisitTime,
+        daysSinceLastVisit,
         daysSinceAdded: hasValidDate
           ? Math.floor((now - bookmark.dateAdded) / (24 * 60 * 60 * 1000))
           : null,

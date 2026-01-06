@@ -11,9 +11,10 @@ A Firefox extension that surfaces your forgotten bookmarks — the ones you save
 ## Features
 
 - **Discover forgotten bookmarks** — Shows bookmarks you've rarely or never visited
+- **Stale bookmark detection** — Find bookmarks you visited a few times long ago but haven't opened in months or years
 - **Click to open** — Just click any bookmark to visit it
 - **Refresh behavior** — Choose to see new bookmarks every time, once a day, or only when you manually refresh
-- **Configurable criteria** — Set maximum visit count and minimum age for "forgotten" status
+- **Configurable criteria** — Set maximum visit count, minimum age, and "not visited in X days" threshold
 - **Exclude folders** — Keep certain bookmark folders out of suggestions
 
 ## Screenshots

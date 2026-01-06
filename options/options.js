@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const refreshBehaviorSelect = document.getElementById("refreshBehavior");
   const maxVisitCountInput = document.getElementById("maxVisitCount");
   const minAgeDaysInput = document.getElementById("minAgeDays");
+  const notVisitedInDaysInput = document.getElementById("notVisitedInDays");
   const folderList = document.getElementById("folderList");
   const saveBtn = document.getElementById("saveBtn");
   const saveStatus = document.getElementById("saveStatus");
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   refreshBehaviorSelect.value = settings.refreshBehavior || "always";
   maxVisitCountInput.value = settings.maxVisitCount;
   minAgeDaysInput.value = settings.minAgeDays;
+  notVisitedInDaysInput.value = settings.notVisitedInDays || 0;
 
   // Load folder list
   const folders = await browser.runtime.sendMessage({
@@ -60,6 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       refreshBehavior: refreshBehaviorSelect.value,
       maxVisitCount: parseInt(maxVisitCountInput.value, 10),
       minAgeDays: parseInt(minAgeDaysInput.value, 10),
+      notVisitedInDays: parseInt(notVisitedInDaysInput.value, 10),
       excludedFolders,
     };
 

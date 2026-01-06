@@ -55,7 +55,15 @@ function createBookmarkCard(bookmark) {
   meta.className = "bookmark-meta";
   const visitText =
     bookmark.visitCount === 1 ? "1 visit" : `${bookmark.visitCount} visits`;
-  meta.textContent = `${visitText} · Added ${formatDaysAgo(bookmark.daysSinceAdded)}`;
+
+  let metaText = `${visitText} · Added ${formatDaysAgo(bookmark.daysSinceAdded)}`;
+
+  // Show last visited info if the bookmark has been visited
+  if (bookmark.daysSinceLastVisit !== null && bookmark.visitCount > 0) {
+    metaText += ` · Last visit ${formatDaysAgo(bookmark.daysSinceLastVisit)}`;
+  }
+
+  meta.textContent = metaText;
 
   info.appendChild(title);
   info.appendChild(meta);
